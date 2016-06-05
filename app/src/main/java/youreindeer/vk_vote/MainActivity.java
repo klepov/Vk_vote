@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        VKSdk.login(this, "group,wall");
+        VKSdk.login(this, "audio,messages, video, docs, notes, pages, status, wall, groups, stats, offline");
     }
 
     @Override
@@ -84,13 +84,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void inflateAnswer(JSONArray votes) throws JSONException {
         VKRequest s = VKApi.wall().getComments(VKParameters.from
-                (VKApiConst.OWNER_ID, "-122698639", VKApiConst.POST_ID,PINNED_ID,VKApiConst.COUNT, 100));
+                (VKApiConst.OWNER_ID, "-122698639", VKApiConst.POST_ID, PINNED_ID, VKApiConst.COUNT, 100));
         s.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-                for (int i = 0; i < ((VKCommentArray) response.parsedModel).size(); i++){
-                    if ( ((VKCommentArray) response.parsedModel).get(i).from_id == Integer.parseInt(VKAccessToken.currentToken().userId)){
+                for (int i = 0; i < ((VKCommentArray) response.parsedModel).size(); i++) {
+                    if (((VKCommentArray) response.parsedModel).get(i).from_id == Integer.parseInt(VKAccessToken.currentToken().userId)) {
                         sendButton.setEnabled(false);
                         Toast.makeText(getApplicationContext(), "Уже голосовали", Toast.LENGTH_SHORT)
                                 .show();
@@ -122,13 +122,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-                VKRequest request = VKApi.wall().addComment(VKParameters.from(VKApiConst.OWNER_ID, "-122698639", VKApiConst.POST_ID, PINNED_ID, "text", "+"));
+                VKRequest request = VKApi.wall().addComment(VKParameters.from(VKApiConst.OWNER_ID, "-122698639", VKApiConst.POST_ID, PINNED_ID, "text", VKAccessToken.currentToken().accessToken));
                 request.executeWithListener(new VKRequest.VKRequestListener() {
                     @Override
                     public void onComplete(VKResponse response) {
                         super.onComplete(response);
                         Toast.makeText(getApplicationContext(), "Голос есть", Toast.LENGTH_SHORT)
                                 .show();
+                        sendButton.setEnabled(false);
+
                     }
                 });
             }
